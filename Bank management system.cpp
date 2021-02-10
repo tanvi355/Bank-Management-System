@@ -16,6 +16,7 @@ class account{
     int deposit;
     char type;//account type
 
+//***FUNCTION DECLARATIONS***
 public:
     void new_acc(); //create new account
     void display_acc(); //display acc data
@@ -95,7 +96,7 @@ void display_bal(int);
 void update_acc(int);
 void delete_acc(int);
 void display_all();
-void transaction(float, float);
+void transaction(int, int);
 
 
 
@@ -152,7 +153,7 @@ void update_acc(int n){
             cout<<"Enter new details : "<<el;
             ac.update();
             int pos=(-1)*sizeof(account);
-            File.sekkp(pos,ios::cur);
+            File.seekp(pos,ios::cur);
             File.write((char *) &ac, sizeof(account));
             cout<<el<<"Record Updated successfully"<<el;
             found=true;
@@ -164,27 +165,104 @@ void update_acc(int n){
     }
 }
 
+//Deleting record of an account from file
+void delete_acc(int n){
+    account ac;
+    ifstream inFile;
+    ofstream outFile;
+    inFile.open("account.txt",ios::in,ios::out);
+    if(!inFile){
+        cout<<"File not found...press any key to continue"<<el;
+        return;
+    }
+    outFile.open("Temp.txt",ios::in,ios::out);
+    inFile.seekg(0,ios::beg);
+    while(inFile.read((char *) &Ac, sizeof(account)){
+        if(ac.ret_acno()!=n){
+            outFile.write((char *) &ac, sizeof(account));
+        }
+    }
+    inFile.close();
+    outFile.close();
+    remove("Account.txt");
+    rename("Temp.txt", "Account.txt");
+    cout<<"Account record deleted sccuessfully"<<el;
+}
+
+//Display details of all accounts
+void display_all(){
+    account ac;
+    ifstream inFile;
+    inFile.open("Account.txt",ios::in,ios::out);
+    if(!inFile){
+        cout<<"File not found...press any key to continue"<<el;
+        return;
+    }
+    cout<<"***ALL ACCOUNT DETAILS***"<<el;
+    cout<<"-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*-*-*-*-*-"<<el;
+    cout<<"Acc.No.          Name        Type        Balance"<<el;
+    while(inFile.read((char *) &ac, sizeof(account))){
+        ac.report();
+    }
+    inFile.close();
+}
+
+//Performing transactions on accounts
+void transaction(int n, int choice){
+    float amt;
+    bool found=false;
+    account ac;
+    fstream File;
+    File.open("Account.txt", ios::in | ios::out);
+    if(!File){
+        cout<<"File not found...press any key to continue"<<el;
+        return;
+    }
+    while(File.read((char *) &ac, sizeof(account)) && found=false){
+        if(ret_acno()==n){
+            ac.display_acc();
+            if(choice==1){
+                cout<<"\tDEPOSIT MONEY"<<el;
+                cout<<"Enter amount to be deposited : ";
+                cin>>amt;
+                ac.dep_amt();
+            }
+            if(choice==2){
+                cout<<"\tWITHDRAW MONEY"<<el;
+                cout<<"Enter amount to be withdrawn : ";
+                cin>>amt;
+                float bal=ret_dep();
+                if((bal<500 && ac.ret_type()=='S') || (bal<1000 && ac.ret_type()=='C')){
+                    cout<<"Not enough balance";
+                }
+                else{
+                    ac.draw_amt();
+                }
+            }
+            int pos=(-1)* sizeof(ac);
+			File.seekp(pos,ios::cur);
+			File.write((char *) &ac, sizeof(account));
+			cout<<"\t Record Updated successfully"<<el;
+			found=true;
+        }
+    }
+    File.close();
+    if(found==false){
+        cout<<"Record not found"<<el;
+    }
+}
+          
+    
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-//Driver program
+//Driver code
 int main(){
     char ch;
-    int amt;
+    int num;
 
     do{
-        cout<<el<<"\tMENU"<<el;
+        cout<<el<<"\t\tMENU"<<el;
         cout<<"\t1) Create New Account";
         cout<<"\t2) Deposit Amount";
         cout<<"\t3) Withdraw Amount";
@@ -199,8 +277,53 @@ int main(){
 
         switch(ch){
 
-        case '1':
+            case '1':
+                    write_acc();
+                    break;
+
+            case '2':
+                    cout<<"Enter account no. : ";
+                    cin>>num;
+                    transaction(num, 1);
+                    break;
+
+            case '3':
+                    cout<<"Enter account no. : ";
+                    cin>>num;
+                    transaction(num, 2);
+                    break;
+
+            case '4':
+                    cout<<"Enter account no. : ";
+                    cin>>num;
+                    display_acc();
+                    break;
+
+            case '5':
+                    cout<<"Enter account no. : ";
+                    cin>>num;
+                    update(num);
+                    break;
+
+            case '6':
+                    display_all();
+                    break;
+
+            case '7':
+                    cout<<"Enter account no. : ";
+                    cin>>num;
+                    break;
+
+            case '8':
+                    cout<<"\t\t---THANK YOU FOR BANK MANAGEMENT SYSTEM !!---"<<el;
+                    break;
+                
+            default:
+                    cout<<"\a";
             }
+    }while(ch!=8);
+    
+    return 0;
 
 
 
